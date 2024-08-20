@@ -2,12 +2,13 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from .models import register_user
+from .models import register_student,register_teacher
+
 def login(request):
-    
+
     if request.method=="POST":
         # login(request)
-        redirect("dashboard")
+        return redirect("dashboard")
         
     return render(request,"myapp/login.html")
 
@@ -19,8 +20,14 @@ def register(request):
         id=request.POST.get("id")
         password = request.POST.get("password")
         hash_password = make_password(password)
-        new_user=register_user(name=name,email=email,role=role,person_id=id,password=hash_password)
-        new_user.save()
+        if role=="teacher":
+            new_user=register_teacher(name=name,email=email,role=role,person_id=id,password=hash_password)
+            new_user.save()
+
+        else:
+            new_user=register_student(name=name,email=email,role=role,person_id=id,password=hash_password)
+            new_user.save()
+
         return redirect("login")
     
     return render(request,"myapp/register.html")
